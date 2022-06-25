@@ -1,10 +1,11 @@
 
+val scala212Version = "2.12.15"
+val scala213Version = "2.13.8"
+
 val commonSettings = Seq(
-  version            := "0.6",
-  scalaVersion       := "3.0.1",
-  crossScalaVersions := Seq("3.0.1"),
-  organization       := "ch.epfl.lara",
-  resolvers          += "bintray-epfl-lara" at "https://dl.bintray.com/epfl-lara/maven",
+  scalaVersion       := scala213Version,
+  crossScalaVersions := Seq(scala212Version, scala213Version),
+  organization       := "dev.procgen",
 )
 
 lazy val scallion = project
@@ -16,7 +17,8 @@ lazy val scallion = project
     scalacOptions ++= Seq(
       "-deprecation",
       "-feature",
-      "-unchecked"
+      "-unchecked",
+      "-Ypatmat-exhaust-depth", "off"
     ),
 
     Compile / doc / scalacOptions ++= Seq(
@@ -26,22 +28,30 @@ lazy val scallion = project
       "-doc-root-content", baseDirectory.value + "/project/root-doc.txt"
     ),
 
-    target in Compile in doc := baseDirectory.value / "docs",
+    Compile / doc / target := baseDirectory.value / "docs",
 
     libraryDependencies ++= Seq(
       "org.scalatest" %% "scalatest" % "3.2.9" % "test",
-      "ch.epfl.lara" %% "silex" % "0.6" % "test",
+      "dev.procgen" %% "silex" % "0.6.0-SNAPSHOT" % "test",
     ),
 
-    bintrayOrganization := Some("epfl-lara"),
     licenses += ("Apache-2.0", url("https://opensource.org/licenses/Apache-2.0")),
-    bintrayPackageLabels := Seq(
-      "scala", "parser", "parsing",
-      "ll1", "ll1-parsing", "ll1-grammar",
-      "parser-combinators", "parsing-combinators"
-    ),
-  )
 
+    versionScheme := Some(VersionScheme.EarlySemVer),
+
+    publishTo := {
+      if (isSnapshot.value)
+        Some(Resolver.file("local-ivy", file(Path.userHome.absolutePath + "/.ivy2/local/snapshots"))(Resolver.ivyStylePatterns))
+      else
+        Some(Resolver.file("local-ivy", file(Path.userHome.absolutePath + "/.ivy2/local/releases"))(Resolver.ivyStylePatterns))
+    },
+
+    ThisBuild / publishMavenStyle := false,
+
+    releasePublishArtifactsAction := PgpKeys.publishLocalSigned.value,
+    usePgpKeyHex("D4CCC34729CBF6A632863E506CB956CFB2863F7A"),
+  )
+/*
 lazy val example = project
   .in(file("example"))
   .settings(
@@ -72,5 +82,5 @@ lazy val benchmark = project
     parallelExecution in Test := false,
   )
   .dependsOn(scallion)
-
+*/
 

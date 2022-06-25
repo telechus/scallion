@@ -1,1 +1,3 @@
-addSbtPlugin("org.foundweekends" % "sbt-bintray" % "0.5.4")
+addSbtPlugin("me.pdalpra" % "sbt-autoversion" % "2.0.0")
+addSbtPlugin("com.github.sbt" % "sbt-release" % "1.1.0")
+addSbtPlugin("com.github.sbt" % "sbt-pgp" % "2.1.2")

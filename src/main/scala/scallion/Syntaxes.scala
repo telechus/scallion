@@ -16,10 +16,8 @@
 package scallion
 
 import scala.annotation.implicitNotFound
-import scala.language.higherKinds
 import scala.util.Try
 import scala.collection.mutable.Map
-import scala.reflect.TypeTest
 
 /** Contains the definition of syntaxes. */
 trait Syntaxes {
@@ -301,7 +299,7 @@ trait Syntaxes {
       *
       * @group combinator
       */
-    def up[B >: A](implicit ev: TypeTest[B, A]): Syntax[B] =
+    def up[B >: A](implicit ev: Manifest[A]): Syntax[B] =
       this.map((x: A) => x, (y: B) => ev.unapply(y) match {
         case None => Seq()
         case Some(x) => Seq(x)
